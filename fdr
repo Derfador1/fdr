@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import socket
+
 def fibonacci(n):
 	a = 0
 	b = 1
@@ -45,6 +47,25 @@ def roman_to_hex(number):
 	return hex(result)
 	
 def main():
+	"""
+	host = "127.0.0.1"
+	port1 = 1000 #uid 
+	port2 = 2000 #uid + 1000
+	port3 = 3000 #uid + 2000
+	
+	mySocket0 = socket.socket()
+	mySocket0.bind((host,port1))
+    
+	mySocket1 = socket.socket()
+	mySocket1.bind((host, port2))
+	
+	mySocket2 = socket.socket()
+	mySocket2.bind((host, port3))
+	"""
+	
+	#sd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	#sd.connect(("127.0.0.1", 6667))
+	
 	x = fibonacci(10)
 	print(x)
 	
