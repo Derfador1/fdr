@@ -11,9 +11,11 @@ def fibonacci(n):
 
 def hex_to_dec(n):
 	return hex(n)
-	
-    
-def roman_to_arabic(number):
+
+#converting roman numeral to decimal found at
+#http://stackoverflow.com/questions/19308177/converting-roman-numerals
+#-to-integers-in-python
+def roman_to_hex(number):
 	numerals = [
 		{'letter': 'M', 'value': 1000},
 		{'letter': 'D', 'value': 500},
@@ -51,7 +53,7 @@ def main():
 	
 	d = 'MDCDIIII'
 	
-	c = roman_to_arabic(d)
+	c = roman_to_hex(d)
 	print(c)
 
 if __name__ == '__main__':
