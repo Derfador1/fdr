@@ -89,9 +89,6 @@ def main():
 	port2 = uid + 1000
 	port3 = uid + 2000
 	
-	print(port2)
-	print(port3)
-	
 	#sd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	#sd.connect(("127.0.0.1", 6667))
 	
@@ -109,15 +106,19 @@ def main():
 	myServer2.start()
 	myServer3.start()
 	
-	x = input("What would you like to do?")
-	if x == 'quit':
-		myServer1.quitter()
-		myServer2.quitter()
-		myServer3.quitter()
-		myServer1.join(timeout=1)
-		myServer2.join(timeout=1)
-		myServer3.join(timeout=1)
-		
+	while True:
+		try: 
+			x = input("Type 'quit' to quit, seriously! JUST DO IT: ")
+			if x == 'quit':
+				myServer1.quitter()
+				myServer2.quitter()
+				myServer3.quitter()
+				myServer1.join(timeout=1)
+				myServer2.join(timeout=1)
+				myServer3.join(timeout=1)
+				break
+		except KeyboardInterrupt:
+			print("\nWe dont support that! Type 'quit' instead")	
 		
 	#myServer2 = myThread(host, port2)
 	#myServer3 = myThread(host, port3)
