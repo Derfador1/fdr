@@ -1,7 +1,42 @@
 #! /usr/bin/env python3
 
 import socket
+import os
+import threading
 
+
+class myThread(threading.Thread):
+	def __init__(self, host, port):
+		threading.Thread.__init__(self)
+		self.host = host
+		self.port = port
+		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #move there two lines somewhere else
+		self.server_socket.bind((self.host, self.port))
+		self.server_socket.setblocking(False)
+		self.flag = 1
+		
+	def quitter(self):
+		self.flag = 0
+		
+	def run(self):
+			while(self.flag):
+				try:
+					self.data, addr = self.server_socket.recvfrom(1024)
+					self.data = self.data.decode('utf-8')
+					if self.data[0] == 'F':
+						answer = fibonacci(int(self.data[1:]))
+						answer += '\n\0'
+						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
+					elif self.data[0] == 'D':
+						answer = hex_to_dec(int(self.data[1:]))
+						answer += '\n\0'
+						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
+					elif self.data[0] == 'R':
+						pass
+				except BlockingIOError:
+					"""stuff"""	
+			self.server_socket.close()
+			
 def fibonacci(n):
 	a = 0
 	b = 1
@@ -47,35 +82,57 @@ def roman_to_hex(number):
 	return hex(result)
 	
 def main():
-	"""
+	uid = os.getuid()
+
 	host = "127.0.0.1"
-	port1 = 1000 #uid 
-	port2 = 2000 #uid + 1000
-	port3 = 3000 #uid + 2000
+	port1 = uid
+	port2 = uid + 1000
+	port3 = uid + 2000
 	
-	mySocket0 = socket.socket()
-	mySocket0.bind((host,port1))
-    
-	mySocket1 = socket.socket()
-	mySocket1.bind((host, port2))
-	
-	mySocket2 = socket.socket()
-	mySocket2.bind((host, port3))
-	"""
+	print(port2)
+	print(port3)
 	
 	#sd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	#sd.connect(("127.0.0.1", 6667))
 	
-	x = fibonacci(10)
-	print(x)
+	#mySocket0.bind((host,port1))
+    
+	#mySocket1.bind((host, port2))
 	
-	b = hex_to_dec(10998723)
-	print(b)
+	#mySocket2.bind((host, port3))
 	
-	d = 'MDCDIIII'
+	myServer1 = myThread(host, port1)
+	myServer2 = myThread(host, port2)
+	myServer3 = myThread(host, port3)
 	
-	c = roman_to_hex(d)
-	print(c)
+	myServer1.start()
+	myServer2.start()
+	myServer3.start()
+	
+	x = input("What would you like to do?")
+	if x == 'quit':
+		myServer1.quitter()
+		myServer2.quitter()
+		myServer3.quitter()
+		myServer1.join(timeout=1)
+		myServer2.join(timeout=1)
+		myServer3.join(timeout=1)
+		
+		
+	#myServer2 = myThread(host, port2)
+	#myServer3 = myThread(host, port3)
+
+	
+	#x = fibonacci(10)
+	#print(x)
+	
+	#b = hex_to_dec(10998723)
+	#print(b)
+	
+	#d = 'MDCDIIII'
+	
+	#c = roman_to_hex(d)
+	#print(c)
 
 if __name__ == '__main__':
 	main()
