@@ -23,21 +23,21 @@ class myThread(threading.Thread):
 				try:
 					self.data, addr = self.server_socket.recvfrom(1024)
 					self.data = self.data.decode('utf-8')
-					if self.data[0] == 'F':
+					if self.data[0].upper() == 'F':
 						if int(self.data[1:]) < 0 or int(self.data[1:]) > 300:
 							answer = "Please make you bounds be between 0-300"
 						else:
 							answer = fibonacci(int(self.data[1:]))
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
-					elif self.data[0] == 'D':
+					elif self.data[0].upper() == 'D':
 						if int(self.data[1:]) < 0 or int(self.data[1:]) > 10**30:
 							answer = "Please make you bounds be between 0-10^30"
 						else:
 							answer = hex_to_dec(int(self.data[1:]))
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
-					elif self.data[0] == 'R':
+					elif self.data[0].upper() == 'R':
 						answer = roman_to_hex(str(self.data[1:]))
 						if answer == 0:
 							answer = "Please make you bounds be between I-MMMM"
@@ -72,7 +72,6 @@ def roman_to_hex(number):
 		{'letter': 'V', 'value': 5},
 		{'letter': 'I', 'value': 1},
 	]
-	
 	
 	index_by_letter = {}
 	for index in range(len(numerals)):
