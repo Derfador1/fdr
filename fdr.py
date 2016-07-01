@@ -5,25 +5,29 @@ import os
 import threading
 import math
 
-#comment
+#class to create my threads and socket connections
 class myThread(threading.Thread):
 	def __init__(self, host, port):
 		threading.Thread.__init__(self)
 		self.host = host
 		self.port = port
-		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #move there two lines somewhere else
+		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.server_socket.bind((self.host, self.port))
 		self.server_socket.setblocking(False)
 		self.flag = 1
-		
+	
+	#used to set my while loop flag to 0 to break out
 	def quitter(self):
 		self.flag = 0
 		
 	def run(self):
 			while(self.flag):
 				try:
+					#recieve information for the requestee
 					self.data, addr = self.server_socket.recvfrom(1024)
 					self.data = self.data.decode('utf-8')
+					#checks to see which function would need to called 
+					#to convert to hexadecimal
 					if self.data[0].upper() == 'F':
 						if int(self.data[1:]) < 0 or int(self.data[1:]) > 300:
 							answer = "Please make you bounds be between 0-300"
@@ -40,10 +44,12 @@ class myThread(threading.Thread):
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 					elif self.data[0].upper() == 'R':
 						answer = roman_to_hex(str(self.data[1:]))
+						#if 0 returned from answer then error occured with value
 						if answer == 0:
 							answer = "Please make you bounds be between I-MMMM"
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
+				#to handle Blocking error
 				except BlockingIOError:
 					"""stuff"""	
 			self.server_socket.close()
@@ -98,6 +104,7 @@ def roman_to_hex(number):
 	return hex(result)
 	
 def ender(myServer1, myServer2, myServer3):
+	#joins and quits all running threads
 	myServer1.quitter()
 	myServer2.quitter()
 	myServer3.quitter()
@@ -113,10 +120,13 @@ def main():
 	port2 = uid + 1000
 	port3 = uid + 2000
 
+	#starts up my threads based on port and host
 	myServer1 = myThread(host, port1)
 	myServer2 = myThread(host, port2)
 	myServer3 = myThread(host, port3)
 	
+	#starts the function that will do the while loops to keep 
+	#accepting input
 	myServer1.start()
 	myServer2.start()
 	myServer3.start()
