@@ -4,7 +4,6 @@ import socket
 import os
 import threading
 
-
 class myThread(threading.Thread):
 	def __init__(self, host, port):
 		threading.Thread.__init__(self)
@@ -32,7 +31,9 @@ class myThread(threading.Thread):
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 					elif self.data[0] == 'R':
-						pass
+						answer = roman_to_hex(str(self.data[1:]))
+						answer += '\n\0'
+						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 				except BlockingIOError:
 					"""stuff"""	
 			self.server_socket.close()
@@ -81,6 +82,14 @@ def roman_to_hex(number):
 
 	return hex(result)
 	
+def ender(myServer1, myServer2, myServer3):
+	myServer1.quitter()
+	myServer2.quitter()
+	myServer3.quitter()
+	myServer1.join(timeout=1)
+	myServer2.join(timeout=1)
+	myServer3.join(timeout=1)
+	
 def main():
 	uid = os.getuid()
 
@@ -88,16 +97,7 @@ def main():
 	port1 = uid
 	port2 = uid + 1000
 	port3 = uid + 2000
-	
-	#sd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	#sd.connect(("127.0.0.1", 6667))
-	
-	#mySocket0.bind((host,port1))
-    
-	#mySocket1.bind((host, port2))
-	
-	#mySocket2.bind((host, port3))
-	
+
 	myServer1 = myThread(host, port1)
 	myServer2 = myThread(host, port2)
 	myServer3 = myThread(host, port3)
@@ -110,30 +110,12 @@ def main():
 		try: 
 			x = input("Type 'quit' to quit, seriously! JUST DO IT: ")
 			if x == 'quit':
-				myServer1.quitter()
-				myServer2.quitter()
-				myServer3.quitter()
-				myServer1.join(timeout=1)
-				myServer2.join(timeout=1)
-				myServer3.join(timeout=1)
+				ender(myServer1, myServer2, myServer3)
 				break
 		except KeyboardInterrupt:
-			print("\nWe dont support that! Type 'quit' instead")	
-		
-	#myServer2 = myThread(host, port2)
-	#myServer3 = myThread(host, port3)
-
-	
-	#x = fibonacci(10)
-	#print(x)
-	
-	#b = hex_to_dec(10998723)
-	#print(b)
-	
-	#d = 'MDCDIIII'
-	
-	#c = roman_to_hex(d)
-	#print(c)
+			ender(myServer1, myServer2, myServer3)
+			print()
+			break
 
 if __name__ == '__main__':
 	main()
