@@ -5,6 +5,7 @@ import os
 import threading
 import math
 
+#comment
 class myThread(threading.Thread):
 	def __init__(self, host, port):
 		threading.Thread.__init__(self)
