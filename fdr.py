@@ -3,6 +3,7 @@
 import socket
 import os
 import threading
+import math
 
 class myThread(threading.Thread):
 	def __init__(self, host, port):
@@ -23,15 +24,23 @@ class myThread(threading.Thread):
 					self.data, addr = self.server_socket.recvfrom(1024)
 					self.data = self.data.decode('utf-8')
 					if self.data[0] == 'F':
-						answer = fibonacci(int(self.data[1:]))
+						if int(self.data[1:]) < 0 or int(self.data[1:]) > 300:
+							answer = "Please make you bounds be between 0-300"
+						else:
+							answer = fibonacci(int(self.data[1:]))
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 					elif self.data[0] == 'D':
-						answer = hex_to_dec(int(self.data[1:]))
+						if int(self.data[1:]) < 0 or int(self.data[1:]) > 10**30:
+							answer = "Please make you bounds be between 0-10^30"
+						else:
+							answer = hex_to_dec(int(self.data[1:]))
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 					elif self.data[0] == 'R':
 						answer = roman_to_hex(str(self.data[1:]))
+						if answer == 0:
+							answer = "Please make you bounds be between I-MMMM"
 						answer += '\n\0'
 						self.server_socket.sendto(bytes(answer, 'utf-8'), addr)
 				except BlockingIOError:
@@ -72,13 +81,19 @@ def roman_to_hex(number):
 	result = 0
 	previous_value = None
 	for letter in reversed(number):
-		index = index_by_letter[letter]
+		try:
+			index = index_by_letter[letter]
+		except KeyError:
+			return 0
 		value = numerals[index]['value']
 		if (previous_value is None) or (previous_value <= value):
 			result += value
 		else:
 			result -= value
 		previous_value = value
+
+	if result < 1 or result > 4000:
+		return 0
 
 	return hex(result)
 	
